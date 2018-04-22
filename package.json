@@ -35,8 +35,12 @@
     "netrc": "^0.1.4",
     "pretty-bytes": "^4.0.2",
     "r2": "^2.0.1",
+    "rimraf": "^2.6.2",
+    "tempy": "^0.2.1",
     "url-join": "^4.0.0",
-    "yargs": "^11.0.0"
+    "write": "^1.0.3",
+    "yargs": "^11.0.0",
+    "yazl": "^2.4.3"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
