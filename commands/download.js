@@ -5,6 +5,7 @@ const { wrap } = require('./utils');
 const { ZipFile } = require('yazl');
 const chalk = require('chalk');
 const downloadsFolder = require('downloads-folder');
+const fecha = require('fecha');
 const path = require('path');
 const pMap = require('p-map');
 const pMapSeries = require('p-map-series');
@@ -14,6 +15,7 @@ const tempy = require('tempy');
 const urlJoin = require('url-join');
 const writeFile = require('write');
 
+const dateFormat = 'YYYY-MM-DD_HH-mm-ss';
 const flatten = arr => [].concat.apply([], arr);
 
 const options = {
@@ -32,6 +34,7 @@ module.exports = {
 };
 
 async function handler({ client, credentials }, { dest }) {
+  const timestamp = fecha.format(new Date(), dateFormat);
   const sitename = credentials.login;
   const files = await walk(client);
   const baseUrl = `https://${sitename}.neocities.org/`;
@@ -40,7 +43,7 @@ async function handler({ client, credentials }, { dest }) {
     const entries = await pMap(files, it => {
       return download(it.path, baseUrl, tmpdir);
     }, { concurrency: 16 });
-    const archivePath = await createArchive(entries, dest);
+    const archivePath = await createArchive(entries, timestamp, dest);
     await rimraf(tmpdir);
     console.log(chalk`\nSite downloaded to {bold.blue ${archivePath}}`);
   } catch (err) {
@@ -66,12 +69,12 @@ async function download(filePath, baseUrl, dest) {
   return { realPath: localPath, metadataPath: filePath };
 }
 
-function createArchive(entries, dest = downloadsFolder()) {
+function createArchive(entries, timestamp, dest = downloadsFolder()) {
   const zip = new ZipFile();
   entries.forEach(it => zip.addFile(it.realPath, it.metadataPath));
   zip.end();
   return new Promise((resolve, reject) => {
-    const archivePath = path.join(dest, 'site.zip');
+    const archivePath = path.join(dest, `site-backup.${timestamp}.zip`);
     zip.outputStream.pipe(writeFile.stream(archivePath))
       .once('error', reject)
       .once('finish', () => resolve(archivePath));
