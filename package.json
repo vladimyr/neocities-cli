@@ -1,0 +1,49 @@
+{
+  "name": "neocities-cli",
+  "version": "1.0.0",
+  "description": "Manage your neocities.org site using terminal",
+  "main": "client.js",
+  "bin": {
+    "neocities": "cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "neocities",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vladimyr/neocities-cli.git"
+  },
+  "author": {
+    "email": "d.vladimyr@gmail.com",
+    "name": "Dario Vladovic",
+    "url": "github.com/vladimyr"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vladimyr/neocities-cli/issues"
+  },
+  "homepage": "https://github.com/vladimyr/neocities-cli",
+  "dependencies": {
+    "chalk": "^2.4.0",
+    "fetchival": "^0.3.3",
+    "humanize-string": "^1.0.2",
+    "isomorphic-unfetch": "^2.0.0",
+    "netrc": "^0.1.4",
+    "pretty-bytes": "^4.0.2",
+    "url-join": "^4.0.0",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-semistandard": "^12.0.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
