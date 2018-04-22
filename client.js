@@ -8,14 +8,7 @@ const r2 = require('r2');
 const BASE_URL = 'https://neocities.org/api';
 
 const isEmpty = obj => Object.keys(obj).length === 0;
-const reduce = (obj, cb) => {
-  return Object.keys(obj)
-    .reduce((acc, key) => cb(acc, obj[key], key), {});
-};
-const clean = obj => reduce(obj, (acc, value, key) => {
-  if (value) acc[key] = value;
-  return acc;
-});
+const isSuccessful = resp => resp.status >= 200 && resp.status < 300;
 
 class Client {
   static async apiKey(username, password, baseUrl = BASE_URL) {
@@ -32,22 +25,26 @@ class Client {
     this.baseUrl = baseUrl;
   }
 
-  request(path, options = {}) {
+  async request(path, options = {}) {
     const query = !isEmpty(options.query) && `?${qs.stringify(options.query)}`;
     const url = urlJoin(this.baseUrl, path, query || '');
     const headers = { Authorization: `Bearer ${this._apiKey}` };
-    return r2(url, { headers, ...options });
+    const resp = await r2(url, { headers, ...options }).response;
+    if (isSuccessful(resp)) return resp.json();
+    const err = new Error(resp.statusText);
+    err.response = resp;
+    throw err;
   }
 
   async list({ path } = {}) {
-    const query = clean({ path });
-    const resp = await this.request('/list', { query }).json;
+    const query = { path };
+    const resp = await this.request('/list', { query });
     return resp.files;
   }
 
   async info({ sitename } = {}) {
-    const query = clean({ sitename });
-    const resp = await this.request('/info', { query }).json;
+    const query = { sitename };
+    const resp = await this.request('/info', { query });
     return resp.info;
   }
 }
