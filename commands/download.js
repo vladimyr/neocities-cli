@@ -11,6 +11,8 @@ const tempy = require('tempy');
 const urlJoin = require('url-join');
 const writeFile = require('write');
 
+const flatten = arr => [].concat.apply([], arr);
+
 module.exports = {
   command: 'download',
   desc: 'Download files from site',
@@ -19,8 +21,7 @@ module.exports = {
 
 async function handler({ client, credentials }) {
   const sitename = credentials.login;
-  const items = await client.list({ sitename });
-  const files = items.filter(it => !it.is_directory);
+  const files = await walk(client);
   const baseUrl = `https://${sitename}.neocities.org/`;
   const dest = tempy.directory();
   try {
@@ -34,6 +35,15 @@ async function handler({ client, credentials }) {
     console.error(chalk`\n{bgRed.white.bold Login error} ${err.message}`);
     process.exit(1);
   }
+}
+
+async function walk(client, path = '/') {
+  const items = await client.list({ path });
+  const tree = await Promise.all(
+    items.map(it => it.is_directory ? walk(client, it.path) : it)
+  );
+  const files = flatten(tree);
+  return files;
 }
 
 async function download(filePath, baseUrl, dest) {
