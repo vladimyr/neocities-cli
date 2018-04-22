@@ -1,5 +1,6 @@
 'use strict';
 
+const { join, relative } = require('path');
 const { wrap } = require('./utils');
 const chalk = require('chalk');
 const prettyBytes = require('pretty-bytes');
@@ -11,20 +12,22 @@ module.exports = {
 };
 
 async function handler({ client, credentials }, { path = '/' }) {
+  path = join('/', path);
   const sitename = credentials.login;
   const items = await client.list({ path });
   const url = `https://${sitename}.neocities.org`;
   console.log(chalk`\nContents of {bold.green ${path}} at {bold.green ${url}}:`);
-  printItems(items);
+  printItems(items, path);
 }
 
-function printItems(items) {
+function printItems(items, dir) {
   console.log();
   items.forEach(item => {
     if (item.is_directory) {
       console.log(chalk`{blue.bold ${item.path}}`);
       return;
     }
-    console.log(chalk`{white ${item.path}}\t${prettyBytes(item.size)}`);
+    const path = relative(dir, join('/', item.path));
+    console.log(chalk`{white ${path}}\t${prettyBytes(item.size)}`);
   });
 }
