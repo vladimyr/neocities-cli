@@ -17,6 +17,7 @@ const writeFile = require('write');
 
 const dateFormat = 'YYYY-MM-DD_HH-mm-ss';
 const flatten = arr => [].concat.apply([], arr);
+const isSuccessful = resp => resp.status >= 200 && resp.status < 300;
 
 const options = {
   dest: {
@@ -64,7 +65,13 @@ async function walk(client, path = '/') {
 async function download(filePath, baseUrl, dest) {
   const localPath = path.join(dest, filePath);
   const url = urlJoin(baseUrl, filePath);
-  const buf = await r2(url).arrayBuffer;
+  const resp = await r2(url).response;
+  if (!isSuccessful(resp)) {
+    const err = new Error(resp.statusText);
+    err.response = resp;
+    throw err;
+  }
+  const buf = await resp.arrayBuffer();
   await writeFile.promise(localPath, Buffer.from(buf), { encoding: 'utf8' });
   return { realPath: localPath, metadataPath: filePath };
 }
