@@ -7,9 +7,9 @@ const trim = str => str.replace(/^\n+|\n+$/g, '');
 
 const alias = { h: 'help', v: 'version' };
 const logo = trim(chalk`
- {yellow |\\---/|}
- {yellow | o_o |}   {bold Neocities}
- {yellow  \\_-_/}
+ {yellow  /\\_/\\}
+ {yellow ( o.o )}   {bold Neocities}
+ {yellow  > ^ <}
 `);
 
 // eslint-disable-next-line no-unused-expressions
