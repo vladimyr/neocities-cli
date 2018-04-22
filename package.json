@@ -29,10 +29,13 @@
   "homepage": "https://github.com/vladimyr/neocities-cli",
   "dependencies": {
     "chalk": "^2.4.0",
+    "downloads-folder": "^1.0.1",
     "fetchival": "^0.3.3",
     "humanize-string": "^1.0.2",
     "isomorphic-unfetch": "^2.0.0",
     "netrc": "^0.1.4",
+    "p-map": "^1.2.0",
+    "p-map-series": "^1.0.0",
     "pretty-bytes": "^4.0.2",
     "r2": "^2.0.1",
     "rimraf": "^2.6.2",

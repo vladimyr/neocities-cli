@@ -4,7 +4,10 @@ const { promisify } = require('util');
 const { wrap } = require('./utils');
 const { ZipFile } = require('yazl');
 const chalk = require('chalk');
+const downloadsFolder = require('downloads-folder');
 const path = require('path');
+const pMap = require('p-map');
+const pMapSeries = require('p-map-series');
 const r2 = require('r2');
 const rimraf = promisify(require('rimraf'));
 const tempy = require('tempy');
@@ -13,23 +16,32 @@ const writeFile = require('write');
 
 const flatten = arr => [].concat.apply([], arr);
 
+const options = {
+  dest: {
+    alias: 'd',
+    describe: 'download directory',
+    type: 'string'
+  }
+};
+
 module.exports = {
   command: 'download',
   desc: 'Download files from site',
-  handler: wrap(handler)
+  handler: wrap(handler),
+  builder: options
 };
 
-async function handler({ client, credentials }) {
+async function handler({ client, credentials }, { dest }) {
   const sitename = credentials.login;
   const files = await walk(client);
   const baseUrl = `https://${sitename}.neocities.org/`;
-  const dest = tempy.directory();
+  const tmpdir = tempy.directory();
   try {
-    const entries = await Promise.all(
-      files.map(it => download(it.path, baseUrl, dest))
-    );
-    const archivePath = await createArchive(entries);
-    await rimraf(dest);
+    const entries = await pMap(files, it => {
+      return download(it.path, baseUrl, tmpdir);
+    }, { concurrency: 16 });
+    const archivePath = await createArchive(entries, dest);
+    await rimraf(tmpdir);
     console.log(chalk`\nSite downloaded to {bold.blue ${archivePath}}`);
   } catch (err) {
     console.error(chalk`\n{bgRed.white.bold Login error} ${err.message}`);
@@ -39,9 +51,9 @@ async function handler({ client, credentials }) {
 
 async function walk(client, path = '/') {
   const items = await client.list({ path });
-  const tree = await Promise.all(
-    items.map(it => it.is_directory ? walk(client, it.path) : it)
-  );
+  const tree = await pMapSeries(items, it => {
+    return it.is_directory ? walk(client, it.path) : it;
+  });
   const files = flatten(tree);
   return files;
 }
@@ -54,7 +66,7 @@ async function download(filePath, baseUrl, dest) {
   return { realPath: localPath, metadataPath: filePath };
 }
 
-function createArchive(entries, dest = process.cwd()) {
+function createArchive(entries, dest = downloadsFolder()) {
   const zip = new ZipFile();
   entries.forEach(it => zip.addFile(it.realPath, it.metadataPath));
   zip.end();
