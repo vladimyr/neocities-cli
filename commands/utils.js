@@ -2,7 +2,7 @@
 
 const chalk = require('chalk');
 const Client = require('../client');
-const netrc = require('../lib/netrc.js');
+const netrc = require('../lib/netrc');
 
 const isRemoteError = err => !!err.response;
 

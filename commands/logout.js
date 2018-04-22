@@ -1,7 +1,7 @@
 'use strict';
 
 const chalk = require('chalk');
-const netrc = require('../lib/netrc.js');
+const netrc = require('../lib/netrc');
 
 module.exports = {
   command: 'logout',
