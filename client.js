@@ -1,11 +1,13 @@
 'use strict';
 
+const { name, version } = require('./package.json');
 const { URL } = require('url');
 const urlJoin = require('url-join');
 const qs = require('querystring');
 const r2 = require('r2');
 
 const BASE_URL = 'https://neocities.org/api';
+const ua = `${name} v${version}`;
 
 const isEmpty = obj => Object.keys(obj).length === 0;
 const isSuccessful = resp => resp.status >= 200 && resp.status < 300;
@@ -28,7 +30,12 @@ class Client {
   async request(path, options = {}) {
     const query = !isEmpty(options.query) && `?${qs.stringify(options.query)}`;
     const url = urlJoin(this.baseUrl, path, query || '');
-    const headers = { Authorization: `Bearer ${this._apiKey}` };
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this._apiKey}`,
+      'User-Agent': ua
+    };
     const resp = await r2(url, { headers, ...options }).response;
     if (isSuccessful(resp)) return resp.json();
     const err = new Error(resp.statusText);

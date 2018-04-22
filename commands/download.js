@@ -1,5 +1,6 @@
 'use strict';
 
+const { name, version } = require('../package.json');
 const { promisify } = require('util');
 const { wrap } = require('./utils');
 const { ZipFile } = require('yazl');
@@ -16,6 +17,7 @@ const urlJoin = require('url-join');
 const writeFile = require('write');
 
 const dateFormat = 'YYYY-MM-DD_HH-mm-ss';
+const ua = `${name} v${version}`;
 const flatten = arr => [].concat.apply([], arr);
 const isSuccessful = resp => resp.status >= 200 && resp.status < 300;
 
@@ -65,7 +67,8 @@ async function walk(client, path = '/') {
 async function download(filePath, baseUrl, dest) {
   const localPath = path.join(dest, filePath);
   const url = urlJoin(baseUrl, filePath);
-  const resp = await r2(url).response;
+  const headers = { 'User-Agent': ua };
+  const resp = await r2(url, { headers }).response;
   if (!isSuccessful(resp)) {
     const err = new Error(resp.statusText);
     err.response = resp;
