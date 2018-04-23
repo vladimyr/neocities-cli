@@ -36,19 +36,19 @@ module.exports = {
   builder: options
 };
 
-async function handler({ client }, { dest }) {
+async function handler({ client, auth }, { dest }) {
   const timestamp = fecha.format(new Date(), dateFormat);
   const files = await walk(client);
   const tmpdir = tempy.directory();
   try {
     const entries = await pMap(files, it => {
-      return download(it.path, client.baseUrl, tmpdir);
+      return download(it.path, auth.siteUrl, tmpdir);
     }, { concurrency: 16 });
     const archivePath = await createArchive(entries, timestamp, dest);
     await rimraf(tmpdir);
     console.log(chalk`\nSite downloaded to {bold.blue ${archivePath}}`);
   } catch (err) {
-    console.error(chalk`\n{bgRed.white.bold Login error} ${err.message}`);
+    console.error(chalk`\n{bgRed.white.bold Error} ${err.message}`);
     process.exit(1);
   }
 }
