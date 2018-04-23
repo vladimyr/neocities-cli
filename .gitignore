@@ -8,6 +8,7 @@ npm-debug.log*
 
 # private stuff
 credentials.json
+site-backup*
 
 # editors
 .idea
