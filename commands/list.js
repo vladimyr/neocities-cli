@@ -11,11 +11,10 @@ module.exports = {
   handler: wrap(handler)
 };
 
-async function handler({ client, credentials }, { path = '/' }) {
+async function handler({ client, auth }, { path = '/' }) {
   path = join('/', path);
-  const sitename = credentials.login;
+  const url = auth.siteUrl;
   const items = await client.list({ path });
-  const url = `https://${sitename}.neocities.org`;
   console.log(chalk`\nContents of {bold.green ${path}} at {bold.green ${url}}:`);
   printItems(items, path);
 }

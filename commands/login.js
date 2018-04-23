@@ -1,9 +1,9 @@
 'use strict';
 
 const { prompt } = require('inquirer');
+const { storeCredentials } = require('../lib/auth');
 const chalk = require('chalk');
 const Client = require('../client');
-const netrc = require('../lib/netrc');
 
 const isRemoteError = err => !!err.response;
 const notEmpty = input => input && input.length > 0;
@@ -33,10 +33,8 @@ async function handler() {
   const { sitename, password } = await prompt(questions);
   try {
     const apiKey = await Client.apiKey(sitename, password);
-    const conf = await netrc.read();
-    conf['neocities.org'] = { login: sitename, password: apiKey };
-    netrc.write(conf);
-    console.log(`\nSuccessfully logged to ${subdomain(sitename)}.`);
+    const auth = await storeCredentials(sitename, apiKey);
+    console.log(chalk`\nSuccessfully logged to {green ${auth.siteUrl}}`);
   } catch (err) {
     if (!isRemoteError(err)) throw err;
     const { message } = await err.response.json();

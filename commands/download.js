@@ -36,15 +36,13 @@ module.exports = {
   builder: options
 };
 
-async function handler({ client, credentials }, { dest }) {
+async function handler({ client }, { dest }) {
   const timestamp = fecha.format(new Date(), dateFormat);
-  const sitename = credentials.login;
   const files = await walk(client);
-  const baseUrl = `https://${sitename}.neocities.org/`;
   const tmpdir = tempy.directory();
   try {
     const entries = await pMap(files, it => {
-      return download(it.path, baseUrl, tmpdir);
+      return download(it.path, client.baseUrl, tmpdir);
     }, { concurrency: 16 });
     const archivePath = await createArchive(entries, timestamp, dest);
     await rimraf(tmpdir);

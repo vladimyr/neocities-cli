@@ -12,8 +12,8 @@ module.exports = {
   handler: wrap(handler)
 };
 
-async function handler({ client, credentials }, { sitename }) {
-  sitename = sitename || credentials.login;
+async function handler({ client, auth }, { sitename }) {
+  sitename = sitename || auth.sitename;
   sitename = sitename.replace(/\.neocities\.org$/, '').toLowerCase();
   const info = await client.info({ sitename });
   printInfo(info);

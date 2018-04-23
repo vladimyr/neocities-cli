@@ -1,7 +1,7 @@
 'use strict';
 
+const { getCredentials } = require('../lib/auth');
 const chalk = require('chalk');
-const netrc = require('../lib/netrc');
 
 module.exports = {
   command: 'whoami',
@@ -10,12 +10,10 @@ module.exports = {
 };
 
 async function handler() {
-  const conf = await netrc.read();
-  const credentials = conf['neocities.org'];
-  if (!credentials) {
+  const auth = await getCredentials();
+  if (!auth) {
     console.error('\nYou are not logged in!');
     return;
   }
-  const location = `https://${credentials.login}.neocities.org`;
-  console.log(chalk`\nLogged to {green ${location}}`);
+  console.log(chalk`\nLogged to {green ${auth.siteUrl}}`);
 }

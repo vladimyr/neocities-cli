@@ -1,7 +1,7 @@
 'use strict';
 
+const { removeCredentials } = require('../lib/auth');
 const chalk = require('chalk');
-const netrc = require('../lib/netrc');
 
 module.exports = {
   command: 'logout',
@@ -10,14 +10,10 @@ module.exports = {
 };
 
 async function handler() {
-  const conf = await netrc.read();
-  const credentials = conf['neocities.org'];
-  if (!credentials) {
+  const auth = await removeCredentials();
+  if (!auth) {
     console.error('\nYou are not logged in!');
     return;
   }
-  const location = `https://${credentials.login}.neocities.org`;
-  delete conf['neocities.org'];
-  await netrc.write(conf);
-  console.log(chalk`\nLogged out from {green ${location}}`);
+  console.log(chalk`\nLogged out from {green ${auth.siteUrl}}`);
 }

@@ -1,8 +1,8 @@
 'use strict';
 
+const { getCredentials } = require('../lib/auth');
 const chalk = require('chalk');
 const Client = require('../client');
-const netrc = require('../lib/netrc');
 
 const isRemoteError = err => !!err.response;
 
@@ -10,15 +10,14 @@ module.exports = { wrap };
 
 function wrap(handler) {
   return async function (...args) {
-    const conf = await netrc.read();
-    const credentials = conf['neocities.org'];
-    if (!credentials) {
+    const auth = await getCredentials();
+    if (!auth) {
       console.error('\nYou are not logged in!');
       return;
     }
-    const client = new Client(credentials.password);
+    const client = new Client(auth.apiKey);
     try {
-      await handler.call(this, { client, credentials }, ...args);
+      await handler.call(this, { client, auth }, ...args);
     } catch (err) {
       if (!isRemoteError(err)) throw err;
       const { message } = await err.response.json();
