@@ -2,20 +2,21 @@
 
 'use strict';
 
-const { version, homepage, bugs } = require('./package.json');
 const chalk = require('chalk');
-const trim = str => str.replace(/^\n+|\n+$/g, '');
+const pkg = require('./package.json');
 
 const alias = { h: 'help', v: 'version' };
-const logo = trim(chalk`
+const usage = chalk`
  {yellow  /\\_/\\}
- {yellow ( o.o )}   {bold Neocities} v${version}
+ {yellow ( o.o )}   {bold Neocities} v${pkg.version}
  {yellow  > ^ <}
-`);
+
+Usage:
+  $0 <command>`;
+
 const footer = chalk`
-Homepage:     {green ${homepage}}
-Report issue: {green ${bugs.url}}
-`.trim();
+Homepage:     {green ${pkg.homepage}}
+Report issue: {green ${pkg.bugs.url}}`.trim();
 
 // eslint-disable-next-line no-unused-expressions
 require('yargs')
@@ -24,7 +25,7 @@ require('yargs')
   .commandDir('commands')
   .demandCommand(1, 'You need at least one command before moving on')
   .recommendCommands()
-  .usage(`\n${logo}`)
+  .usage(usage)
   .epilogue(footer)
   .fail(onError)
   .help()
