@@ -5,7 +5,7 @@ const chalk = require('chalk');
 
 module.exports = {
   command: 'whoami',
-  desc: 'Show to which site you are logged in',
+  desc: chalk.whiteBright('Show to which site you are logged in'),
   handler
 };
 

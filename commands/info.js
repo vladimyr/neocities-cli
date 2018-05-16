@@ -8,7 +8,7 @@ const each = (obj, cb) => Object.keys(obj).forEach(key => cb(obj[key], key));
 
 module.exports = {
   command: 'info [sitename]',
-  desc: 'Show site information',
+  desc: chalk.whiteBright('Show site information'),
   handler: wrap(handler)
 };
 

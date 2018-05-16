@@ -7,7 +7,7 @@ const prettyBytes = require('pretty-bytes');
 
 module.exports = {
   command: 'list [path]',
-  desc: 'List files from site',
+  desc: chalk.whiteBright('List files from site'),
   handler: wrap(handler)
 };
 

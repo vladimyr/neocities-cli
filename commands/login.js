@@ -25,7 +25,7 @@ const questions = [{
 
 module.exports = {
   command: 'login',
-  desc: 'Log into neocities.org site',
+  desc: chalk.whiteBright('Log into neocities.org site'),
   handler
 };
 

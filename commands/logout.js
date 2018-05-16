@@ -5,7 +5,7 @@ const chalk = require('chalk');
 
 module.exports = {
   command: 'logout',
-  desc: 'Log out from neocities.org site',
+  desc: chalk.whiteBright('Log out from neocities.org site'),
   handler
 };
 

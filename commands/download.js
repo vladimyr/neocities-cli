@@ -22,8 +22,8 @@ const flatten = arr => [].concat.apply([], arr);
 const isSuccessful = resp => resp.status >= 200 && resp.status < 300;
 
 const options = {
-  dest: {
-    alias: 'd',
+  d: {
+    alias: 'dest',
     describe: 'download directory',
     type: 'string'
   }
@@ -31,7 +31,7 @@ const options = {
 
 module.exports = {
   command: 'download',
-  desc: 'Download files from site',
+  desc: chalk.whiteBright('Download files from site'),
   handler: wrap(handler),
   builder: options
 };
